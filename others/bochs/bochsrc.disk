@@ -1,8 +1,8 @@
 
 megs: 32
 
-romimage: file=$BXSHARE/BIOS-bochs-latest
-vgaromimage: file=$BXSHARE/VGABIOS-lgpl-latest
+romimage: file=tools/Bochs-2.3.6/BIOS-bochs-latest
+vgaromimage: file=tools/Bochs-2.3.6/VGABIOS-lgpl-latest
 
 #floppya: 1_44="others/bochs/os.raw", status=inserted
 #boot: floppy
@@ -11,7 +11,7 @@ boot: disk
 log: ../bochs/bochs.out
 
 mouse: enabled=0
-keyboard: keymap=$BXSHARE/keymaps/x11-pc-us.map
+keyboard: keymap=tools/Bochs-2.3.6/keymaps/x11-pc-us.map
 
 ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
 ata0-master: type=disk, path="others/bochs/os.raw", mode=flat, cylinders=121, heads=16, spt=63

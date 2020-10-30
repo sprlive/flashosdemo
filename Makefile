@@ -3,7 +3,6 @@ include Rules.make
 all: Image
 
 Image: boot/bootsect.bin boot/setup.bin boot/head.bin init/main.bin
-	del /q others\bochs\os.raw
 	bximage -mode=create -hd=60 -q $(BOCHS_HOME)/os.raw
 	dd if=boot/bootsect.bin of=$(BOCHS_HOME)/os.raw bs=512 count=1
 	dd if=boot/setup.bin of=$(BOCHS_HOME)/os.raw bs=512 count=4 seek=1
