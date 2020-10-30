@@ -35,6 +35,10 @@ start:
 ; 0x90090	; 16;	第2个硬盘的参数表	  ;
 ; 0x901FC	; 2 ;	根文件系统所在的设备号（bootsec.s中设置）;
 
+mov ax,INITSEG
+mov ds,ax
+mov es,ax
+
 mov ah,0x88
 int 0x15
 mov [2],ax	;取从0x100000（1M）处开始的扩展内存大小（KB）
@@ -48,6 +52,12 @@ mov [0xc],cx
 
 mov ah,80	;预设显卡行列值 80 列
 mov al,25	;预设显卡行列值 25 行
+
+;;; 获取光标位置
+mov	ah,0x03
+xor	bh,bh
+int	0x10
+mov	[0],dx
 
 ;准备开始进入保护模式！
 cli

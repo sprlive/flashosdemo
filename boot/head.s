@@ -1,6 +1,10 @@
 %define stack_start	0x0200
 
+extern _kernel_start
+
 [bits 32]
+
+global startup_32
 
 ;页目录表 0x0000
 _pg_dir:
@@ -91,7 +95,7 @@ after_page_tables:
 	push 0		;main函数参数argv
 	push 0		;main函数参数argc
 	push L6		;返回地址
-	push 0x6000 + 0x400	;main函数入口地址
+	push _kernel_start	;main函数入口地址
 	jmp setup_paging
 L6:
 	jmp L6		;main函数其实不会返回的，为了以防万一做这样的事
