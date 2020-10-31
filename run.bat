@@ -1,3 +1,4 @@
 set PATH=tools;tools\MinGW\bin;tools\Bochs-2.3.6;..\tools;..\tools\MinGW\bin;..\tools\Bochs-2.3.6;
+make clean
 make run
-del /q others\bochs\os.raw
+make clean
