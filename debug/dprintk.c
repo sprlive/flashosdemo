@@ -59,3 +59,9 @@ int dprintk(const char* str) {
 	}
 	return 1;
 }
+
+void putchar(char c) {
+	char* vram = (char*)(pos);
+	*vram++ = c;
+	*vram++ = 0x07;
+}
