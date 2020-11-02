@@ -1,19 +1,8 @@
 #include <debug.h>
+#include <asm/io.h>
 
 #define ORIG_X (*(unsigned char *)0x90000)
 #define ORIG_Y (*(unsigned char *)0x90001)
-
-/**
- * 硬件端口字节输出(带延迟)
- * 使用两条跳转语句来延迟一会儿
- * @param[in]	value	欲输出字节
- * @param[in]	port	端口
- */
-#define outb_p(value, port) 										\
-	__asm__ ("outb %%al,%%dx\n"										\
-			"\tjmp 1f\n"											\
-			"1:\tjmp 1f\n" 											\
-			"1:"::"a" (value),"d" (port))
 
 static unsigned int columns_in_bytes = 160;
 static unsigned int columns_in_chars = 80;
@@ -133,12 +122,12 @@ void dprintk(const char* str) {
 		if (c == 10) {
 			cr();
 			lf();
-			return;
+			break;
 		}
 		// cr归位键 \r
 		if (c == 13) {
 			cr();
-			return;
+			break;
 		}
 		// 自动换行
 		if (x >= columns_in_chars) {

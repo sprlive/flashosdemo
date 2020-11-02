@@ -1,6 +1,6 @@
 include Rules.make
 
-OBJECTS = boot/head.o init/main.o debug/debug.o
+OBJECTS = boot/head.o init/main.o debug/debug.o kernel/kernel.o
 
 all: Image
 
@@ -39,6 +39,10 @@ init/main.o: init/main.c
 debug/debug.o:
 	@echo 正在生成调试模块 debug
 	@cd debug && @make
+
+kernel/kernel.o:
+	@echo 正在生成内核模块 kernel
+	@cd kernel && @make
 	
 
 ######### 各种命令 #########
@@ -51,7 +55,8 @@ brun: Image
 	
 clean:
 	@echo 清理工作.....
-	@del /q others\bochs\os.raw
+	@del /q others\bochs\os.raw*
 	@cd boot && make clean
 	@cd debug && make clean
 	@cd init && make clean
+	@cd kernel && make clean

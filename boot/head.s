@@ -52,6 +52,16 @@ startup_32:
 	mov byte [gs:0xb8202],'e'
 	mov byte [gs:0xb8204],'s'
 	mov byte [gs:0xb8206],'s'
+
+; 将这些表的地址信息保存起来
+; 内存地址	 ; 字节 ; 内容			;
+; 0x91000	; 4	;    gdt
+; 0x90004	; 4	;	 idt 		 
+; 0x90008	; 4	;	 pg_dir			;
+
+	mov dword [0x91000], gdt
+	mov dword [0x91004], idt
+	mov dword [0x91008], _pg_dir
 	
 	jmp after_page_tables
 		
