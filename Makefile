@@ -1,10 +1,15 @@
 include Rules.make
 
-OBJECTS = boot/head.o init/main.o debug/debug.o kernel/kernel.o
+MAIN_O = boot/head.o init/main.o
+DEBUG_O = debug/dprintk.o
+KERNEL_O = kernel/trap.o kernel/keyboard.o kernel/intr.o
+
+OBJECTS = $(MAIN_O) $(DEBUG_O) $(KERNEL_O)
 
 all: Image
 
 Image: boot/bootsect.bin boot/setup.bin init/main.bin
+	@del /q others\bochs\os.raw*
 	@bximage -mode=create -hd=60 -q $(BOCHS_HOME)/os.raw
 	@dd if=boot/bootsect.bin of=$(BOCHS_HOME)/os.raw bs=512 count=1
 	@dd if=boot/setup.bin of=$(BOCHS_HOME)/os.raw bs=512 count=4 seek=1
@@ -21,7 +26,7 @@ boot/setup.bin: boot/setup.s
 	@nasm -I include/ -o boot/setup.bin boot/setup.s -l boot/setup.lst
 
 init/main.bin: $(OBJECTS)
-	@echo 正在生成内核 main.bin
+	@echo 快成功了，正在生成最终的内核！ main.bin
 	@$(LD) $(OBJECTS) -Ttext 0x0 -e startup_32 -o init/main.bin.large
 	@objcopy -O binary init/main.bin.large init/main.bin
 
@@ -29,21 +34,30 @@ init/main.bin: $(OBJECTS)
 ######### 内核部分的各种目标文件 #########
 	
 boot/head.o: boot/head.s
-	@echo 正在生成内核的头部目标文件 head.o
+	@echo 正在生成目标文件 boot/head.o
 	@nasm -f elf -I include/ -o boot/head.o boot/head.s -l boot/head.lst
 
 init/main.o: init/main.c
-	@echo 正在生成内核目标文件 main.o
-	@gcc -c -fno-builtin -I include -o init/main.o init/main.c
-	
-debug/debug.o:
-	@echo 正在生成调试模块 debug
-	@cd debug && @make
+	@echo 正在生成目标文件 init/main.o
+	@gcc $(LIB) $(GCCPARAM) -o init/main.o init/main.c
 
-kernel/kernel.o:
-	@echo 正在生成内核模块 kernel
-	@cd kernel && @make
-	
+
+debug/dprintk.o: debug/dprintk.c
+	@echo 正在生成目标文件 debug/dprintk.o
+	@gcc $(LIB) $(GCCPARAM) -o debug/dprintk.o debug/dprintk.c
+
+
+kernel/trap.o: kernel/trap.c
+	@echo 正在生成目标文件 kernel/trap.o
+	@gcc $(LIB) $(GCCPARAM) -o kernel/trap.o kernel/trap.c
+
+kernel/keyboard.o: kernel/keyboard.c
+	@echo 正在生成目标文件 kernel/keyboard.o
+	@gcc $(LIB) $(GCCPARAM) -o kernel/keyboard.o kernel/keyboard.c
+
+kernel/intr.o: kernel/intr.s
+	@echo 正在生成目标文件 kernel/intr.o
+	@nasm -f elf -I include/ -o kernel/intr.o kernel/intr.s
 
 ######### 各种命令 #########
 

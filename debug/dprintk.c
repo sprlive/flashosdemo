@@ -1,5 +1,5 @@
-#include <debug.h>
-#include <asm/io.h>
+#include "debug.h"
+#include "asm/io.h"
 
 #define ORIG_X (*(unsigned char *)0x90000)
 #define ORIG_Y (*(unsigned char *)0x90001)
@@ -115,7 +115,7 @@ void put_hex(int num, char color, char* vram) {
 	set_cursor();
 }
 
-void dprintk(const char* str) {
+void dprintk_color(const char* str, char color) {
 	char c;
 	while ((c = *str++)) {
 		// ls换行符 \n
@@ -135,10 +135,29 @@ void dprintk(const char* str) {
 			pos -= columns_in_bytes;
 			lf();
 		}
-		put_char(c, 0x07, (char*)(pos));
+		put_char(c, color, (char*)(pos));
 		pos += 2;
 		x++;
 	}
+	// 刷新光标
+	set_cursor();
+	return;
+}
+
+void dprintk(const char* str) {
+	dprintk_color(str, 0x07);
+}
+
+void dprintc(char c) {
+	// 自动换行
+	if (x >= columns_in_chars) {
+		x -= columns_in_chars;
+		pos -= columns_in_bytes;
+		lf();
+	}
+	put_char(c, 0x07, (char*)(pos));
+	pos += 2;
+	x++;
 	// 刷新光标
 	set_cursor();
 	return;

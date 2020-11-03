@@ -2465,7 +2465,7 @@ Detailed change log :
  [1021758] GNU/k*BSD host support by Robert Millan
   [969967] int 15/ah=87h clearing cr0 by Ben Lunt
  [1048327] Russian Keymap by Dmitry Soshnikov
-  [851332] DESTDIR support for install_dlx by Ville Skyttä
+  [851332] DESTDIR support for install_dlx by Ville Skytt?
   [970929] gdbstub support for MinGW tool chains by Muranaka Masaki
  [1021740] Turn gdb stub into a runtime option by Charles Duffy
  [1063329] RFB key press/release bug fix by Remko van der Vossen
@@ -4046,7 +4046,7 @@ Changes in 1.2 (June 3, 2001):
 - [ #426036 ] eth_fbsd.cc compile problem on solaris26
   added configure test so that "configure --enable-ne2000" only
   includes the Berkeley Packet Filter code (eth_fbsd) if the header
-  file <net/bpf.h> can be found.  If you don't have BPF the ne2000
+  file <net/bpf.h" can be found.  If you don't have BPF the ne2000
   will not actually move packets, but at least it will compile clean now.
 - [ #428214 ] 1.2.pre1 need documentation for binaries
   Write windows and linux specific documentation to be installed in
