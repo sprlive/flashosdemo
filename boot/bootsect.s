@@ -29,7 +29,6 @@ go:					;这里已经转移到0x90000处（当然同时已经偏移到go处了）
 	mov dx,0xfef4
 	mov sp,dx	;堆栈指针要远大于512字节偏移（0x200），加上setup程序（大约4个扇区0x800），加上堆栈本身的大小
 				;此处设置为0x9ff00-12(参数表长度)，即sp = 0xfef4
-	
 
 .print_loading:		;卷屏并打印字符串“Loading bootsect success”
 	;读光标位置（详见说明/BIOS）

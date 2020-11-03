@@ -2,7 +2,7 @@ include Rules.make
 
 MAIN_O =			\
 	boot/head.o		\
-	init/main.o		
+	init/main.o		\
 
 DEBUG_O =			\
 	debug/dprintk.o	\
@@ -10,7 +10,7 @@ DEBUG_O =			\
 KERNEL_O =				\
 	kernel/trap.o		\
 	kernel/keyboard.o	\
-	kernel/intr.o
+	kernel/intr.o		\
 
 OBJECTS = $(MAIN_O) $(DEBUG_O) $(KERNEL_O)
 
