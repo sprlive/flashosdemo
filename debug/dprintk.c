@@ -1,6 +1,8 @@
 #include "debug.h"
 #include "asm/io.h"
 
+#include <stdarg.h>
+
 #define ORIG_X (*(unsigned char *)0x90000)
 #define ORIG_Y (*(unsigned char *)0x90001)
 
@@ -17,6 +19,7 @@ unsigned int y;
 unsigned int pos;
 unsigned int origin;
 
+extern int vsprintf(char* buf, const char* fmt, int num);
 
 static inline void set_cursor() {
 	outb_p(14, video_port_reg);
@@ -144,8 +147,15 @@ void dprintk_color(const char* str, char color) {
 	return;
 }
 
-void dprintk(const char* str) {
-	dprintk_color(str, 0x07);
+static char buf[1024];
+
+void dprintk(const char* fmt) {
+	dprintk_color(fmt, 0x07);
+}
+
+void dprintf(const char* fmt, int num) {
+	vsprintf(buf, fmt, num);
+	dprintk_color(buf, 0x07);
 }
 
 void dprintc(char c) {

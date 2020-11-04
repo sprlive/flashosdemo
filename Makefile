@@ -11,22 +11,30 @@ KERNEL_O =				\
 	kernel/trap.o		\
 	kernel/keyboard.o	\
 	kernel/intr.o		\
+	kernel/vsprintf.o		\
 
 OBJECTS = $(MAIN_O) $(DEBUG_O) $(KERNEL_O)
 
 all: Image
 
-Image: boot/bootsect.bin boot/setup.bin init/main.bin
-	@del /q others\bochs\os.raw*
-	@echo [正在生成最终的无格式的虚拟硬盘文件！！！] 第一步：创建空文件 os.raw，请按下回车键确认
-	@bximage -mode=create -hd=60 -q $(BOCHS_HOME)/os.raw
-	@echo [正在生成最终的无格式的虚拟硬盘文件！！！] 第二步：第1扇区（启动区）写入 bootsect.bin
-	@dd if=boot/bootsect.bin of=$(BOCHS_HOME)/os.raw bs=512 count=1
-	@echo [正在生成最终的无格式的虚拟硬盘文件！！！] 第三步：第2扇区写入连续4扇区内容 setup.bin
-	@dd if=boot/setup.bin of=$(BOCHS_HOME)/os.raw bs=512 count=4 seek=1
-	@echo [正在生成最终的无格式的虚拟硬盘文件！！！] 第四步：第5扇区开始写入庞大的内核文件 main.bin
-	@dd if=init/main.bin of=$(BOCHS_HOME)/os.raw bs=512 count=100 seek=5
-	@echo [正在生成最终的无格式的虚拟硬盘文件！！！] 第五步：os.raw 生成完毕，准备放入虚拟机启动
+Image: os.raw file.raw
+	@echo [映像准备就绪] 内核映像 oa.raw 文件系统映像 file.raw
+
+os.raw: others/bochs/os.raw boot/bootsect.bin boot/setup.bin init/main.bin
+	@echo [创建存放内核的虚拟硬盘] 准备空文件 os.raw
+	@copy /Y others\bochs\os.raw os.raw
+	@echo [创建存放内核的虚拟硬盘] 第1扇区（启动区）写入 bootsect.bin
+	@dd if=boot/bootsect.bin of=os.raw bs=512 count=1
+	@echo [创建存放内核的虚拟硬盘] 第2扇区写入连续4扇区内容 setup.bin
+	@dd if=boot/setup.bin of=os.raw bs=512 count=4 seek=1
+	@echo [创建存放内核的虚拟硬盘] 第5扇区开始写入庞大的内核文件 main.bin
+	@dd if=init/main.bin of=os.raw bs=512 count=100 seek=5
+	@echo [创建存放内核的虚拟硬盘] os.raw 生成完毕
+	
+file.raw: others/bochs/file.raw
+	@echo [创建存放文件系统的虚拟硬盘] 准备空文件 file.raw
+	@copy /Y others\bochs\file.raw file.raw
+	@echo [创建存放文件系统的虚拟硬盘] file.raw 生成完毕
 
 ######### 三个主文件，启动区(bootsect)、加载器(setup)、内核(main) #########
 	
@@ -66,7 +74,7 @@ brun: Image
 	
 clean:
 	@echo 清理工作.....
-	@del /q others\bochs\os.raw*
+	@del *.raw*
 	@cd boot && make clean
 	@cd debug && make clean
 	@cd init && make clean

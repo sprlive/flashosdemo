@@ -6,8 +6,6 @@
 // 为了证明确实执行到此处特意设置的无效值
 static long count = 0;
 
-static char buf[40*80];
-
 int kernel_start() {
 
 	debug_init();
@@ -16,6 +14,11 @@ int kernel_start() {
 	dprintk("trap init finish\n");
 	keyboard_init();
 	dprintk("keyboard init finish\n");
+
+	dprintk("\n");
+
+	//dprintf("xxxxxxxxxxxfffffffffffxxxxxxx", 1);
+	dprintf("ide num: %", *((char*)0x9100c));
 
 	dprintk("\n");
 

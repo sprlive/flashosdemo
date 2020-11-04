@@ -16,6 +16,19 @@ start:
 	mov	bx,0x0007
 	mov	bp,loading_setup_msg
 	int	0x10
+
+; 将这些表的地址信息保存起来
+; 内存地址	 ; 字节 ; 内容			;
+; 0x9100c	; 2	;	 硬盘数量			;
+
+mov ax,0
+mov ds,ax
+mov es,ax
+mov ax,[0x475]
+mov bx,0x9100
+mov ds,bx
+mov es,bx
+mov [0xc],ax
 	
 ;;;;; 1.获取系统初始化所需要的参数 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 内存地址	 ; 字节 ; 内容				 ;
