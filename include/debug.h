@@ -1,5 +1,6 @@
 void debug_init();
 void dprintf(const char* fmt, int num);
+void dprintf_color(const char* fmt, int num);
 void dprintk(const char* fmt);
 void dprintk_color(const char* str, char color);
 void dprintc(char c);

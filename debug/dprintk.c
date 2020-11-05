@@ -158,6 +158,11 @@ void dprintf(const char* fmt, int num) {
 	dprintk_color(buf, 0x07);
 }
 
+void dprintf_color(const char* fmt, int num) {
+	vsprintf(buf, fmt, num);
+	dprintk_color(buf, 0x0e);
+}
+
 void dprintc(char c) {
 	// ×Ô¶¯»»ĞĞ
 	if (x >= columns_in_chars) {

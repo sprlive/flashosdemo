@@ -1,6 +1,7 @@
 section .data
 extern _keyboard_interrupt
 extern _reserved_interrupt
+extern _hd_interrupt
 
 global _keyboard_interrupt_entry
 global _reserved_interrupt_entry0
@@ -56,6 +57,8 @@ global _reserved_interrupt_entry47
 global _reserved_interrupt_entry48
 global _reserved_interrupt_entry49
 
+global _hd_interrupt_entry
+
 section .text
 
 _keyboard_interrupt_entry:
@@ -91,6 +94,14 @@ no_error_code:
 	pop ebx
 	pop eax
 	iretd
+
+_hd_interrupt_entry:
+	push _hd_interrupt
+	push 0x2e
+	mov al, 0x20
+	out 0x20, al
+	out 0xA0, al
+	jmp no_error_code
 
 %macro _reserved_interrupt_entry 1
 _reserved_interrupt_entry%1:

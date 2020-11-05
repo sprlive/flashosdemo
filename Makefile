@@ -12,7 +12,8 @@ KERNEL_O =				\
 	kernel/keyboard.o	\
 	kernel/intr.o		\
 	kernel/ide.o		\
-	kernel/vsprintf.o		\
+	kernel/vsprintf.o	\
+	kernel/blk_drv/hd.o	\
 
 OBJECTS = $(MAIN_O) $(DEBUG_O) $(KERNEL_O)
 

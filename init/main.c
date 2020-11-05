@@ -5,6 +5,8 @@
 #include "asm/io.h"
 
 extern void read_disk(int lba, int buff, int cnt);
+extern void hd_init();
+extern void hd_out(unsigned int count, unsigned int sect, unsigned int head, unsigned int cyl, unsigned int cmd);
 
 // 为了证明确实执行到此处特意设置的无效值
 static long count = 0;
@@ -19,10 +21,11 @@ int kernel_start() {
 	dprintk("trap init finish\n");
 	keyboard_init();
 	dprintk("keyboard init finish\n");
-
+	hd_init();
+	dprintk("hd init finish\n");
 
 	sti();
-	test_ide();
+	hd_out(1,1,0,0,0x20);
 
 	// 系统怠速
 	for (;;) {
@@ -62,9 +65,6 @@ int kernel_start() {
 #define PIC_M_DATA 0x21	       // 主片的数据端口是0x21
 #define PIC_S_CTRL 0xa0	       // 从片的控制端口是0xa0
 #define PIC_S_DATA 0xa1	       // 从片的数据端口是0xa1
-
-static char buf[1024] = { 'y', 'd',};
-static char buf2[1024] = { 'y', 'd',};
 
 #define PORT_DISK0_DATA				0x1f0
 #define PORT_DISK0_ERR_FEATURE		0x1f1
