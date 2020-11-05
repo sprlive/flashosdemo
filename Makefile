@@ -11,6 +11,7 @@ KERNEL_O =				\
 	kernel/trap.o		\
 	kernel/keyboard.o	\
 	kernel/intr.o		\
+	kernel/ide.o		\
 	kernel/vsprintf.o		\
 
 OBJECTS = $(MAIN_O) $(DEBUG_O) $(KERNEL_O)

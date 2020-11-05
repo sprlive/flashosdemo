@@ -9,8 +9,8 @@ int vsprintf(char* buf, const char* fmt, int num) {
 
 		int start_not_zero = 0;
 
-		*str++ = '0';
-		*str++ = 'x';
+		//*str++ = '0';
+		//*str++ = 'x';
 
 		for (int i = 7; i >= 0; i--) {
 			int cur_index_num = ((num >> (i * 4)) & 0x0000000f);
