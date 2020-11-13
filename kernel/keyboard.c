@@ -117,7 +117,7 @@ void keyboard_init() {
 
 }
 
-void keyboard_interrupt() {
+void keyboard_interrupt(int intr_num) {
 	/* 这次中断发生前的上一次中断,以下任意三个键是否有按下 */
 	int ctrl_down_last = ctrl_status;
 	int shift_down_last = shift_status;
@@ -125,6 +125,8 @@ void keyboard_interrupt() {
 
 	int break_code;
 	int scancode = inb(KBD_BUF_PORT);
+	dprint_info("      <-- keyboard_interrupt");
+	dprint_info_hex(scancode, 0);
 
 	/* 若扫描码是e0开头的,表示此键的按下将产生多个扫描码,
 	 * 所以马上结束此次中断处理函数,等待下一个扫描码进来*/
@@ -197,7 +199,13 @@ void keyboard_interrupt() {
 		char index = (scancode &= 0x00ff);  // 将扫描码的高字节置0,主要是针对高字节是e0的扫描码.
 		char cur_char = keymap[index][shift];  // 在数组中找到对应的字符
 
-		dprintc(cur_char);
+		if (cur_char == enter) {
+			dprintk("\n");
+		} else {
+			dprintc(cur_char);
+		}
+
+		
 
 	} else {
 		dprintk("unknown key\n");

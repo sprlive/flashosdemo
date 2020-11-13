@@ -63,6 +63,7 @@ section .text
 
 _keyboard_interrupt_entry:
 	push _keyboard_interrupt
+	push 0x21
 	;ÖĞ¶Ï½áÊøÃüÁî
 	mov al,0x20
 	out 0xa0,al
@@ -96,7 +97,8 @@ no_error_code:
 	iretd
 
 _hd_interrupt_entry:
-	push _hd_interrupt
+	mov eax,[_hd_interrupt]
+	push eax
 	push 0x2e
 	mov al, 0x20
 	out 0x20, al

@@ -13,6 +13,7 @@ KERNEL_O =				\
 	kernel/intr.o		\
 	kernel/ide.o		\
 	kernel/vsprintf.o	\
+	kernel/mktime.o	\
 	kernel/blk_drv/hd.o	\
 
 OBJECTS = $(MAIN_O) $(DEBUG_O) $(KERNEL_O)

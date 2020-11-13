@@ -3,6 +3,7 @@
 #include "keyboard.h"
 #include "asm/system.h"
 #include "asm/io.h"
+#include <time.h>
 
 extern void read_disk(int lba, int buff, int cnt);
 extern void hd_init();
@@ -12,6 +13,51 @@ extern void hd_out(unsigned int count, unsigned int sect, unsigned int head, uns
 static long count = 0;
 
 static void* b;
+
+extern void do_hd_read;
+extern void do_hd_write;
+extern int hd_interrupt;
+
+extern long kernel_mktime(struct tm* tm);
+long startup_time = 0;
+
+#define PORT_DISK0_DATA				0x1f0
+static char write_buf[256] = {1,};
+
+#define CMOS_READ(addr) ({ \
+outb_p(0x80|addr,0x70); \
+inb_p(0x71); \
+})
+
+#define BCD_TO_BIN(val) ((val)=((val)&15) + ((val)>>4)*10)
+
+static void time_init(void) {
+	struct tm time;
+
+	do {
+		time.tm_sec = CMOS_READ(0);
+		time.tm_min = CMOS_READ(2);
+		time.tm_hour = CMOS_READ(4);
+		time.tm_mday = CMOS_READ(7);
+		time.tm_mon = CMOS_READ(8) - 1;
+		time.tm_year = CMOS_READ(9);
+	} while (time.tm_sec != CMOS_READ(0));
+	BCD_TO_BIN(time.tm_sec);
+	BCD_TO_BIN(time.tm_min);
+	BCD_TO_BIN(time.tm_hour);
+	BCD_TO_BIN(time.tm_mday);
+	BCD_TO_BIN(time.tm_mon);
+	BCD_TO_BIN(time.tm_year);
+
+	dprintk_color("[current time] ", 0x0e);
+	dprintf("%-", time.tm_year);
+	dprintf("%-", time.tm_mon);
+	dprintf("%-", time.tm_mday);
+	dprintf("%:", time.tm_hour);
+	dprintf("%:", time.tm_min);
+	dprintf("%\n", time.tm_sec);
+	startup_time = kernel_mktime(&time);
+}
 
 int kernel_start() {
 
@@ -23,9 +69,23 @@ int kernel_start() {
 	dprintk("keyboard init finish\n");
 	hd_init();
 	dprintk("hd init finish\n");
+	time_init();
+	dprintf("time init finish\n", startup_time);
+
+
+	dprintk("\n");
 
 	sti();
-	hd_out(1,1,0,0,0x20);
+	hd_out(1, 1, 0, 0, 0x30);
+	outsw(PORT_DISK0_DATA, &write_buf, 256);
+	hd_out(1, 1, 0, 0, 0x20);
+
+	dprintk("\n");
+	dprintk_color("[input]", 0x0e);
+
+	//dprintf("do_hd_read: %\n", (int)&do_hd_read);
+	//dprintf("do_hd_write: %\n", (int)&do_hd_write);
+	//dprintf("hd_interrupt: %\n", hd_interrupt);
 
 	// 系统怠速
 	for (;;) {
@@ -100,7 +160,7 @@ void test_ide() {
 	outb(0xf8, 0x21);	
 	outb(0xbf, 0xA1);		//开启
 
-	while (inb(PORT_DISK0_STATUS_CMD) & DISK_STATUS_BUSY);
+	//while (inb(PORT_DISK0_STATUS_CMD) & DISK_STATUS_BUSY);
 
 	dprintf("disk not busy status: %\n", inb(PORT_DISK0_STATUS_CMD));
 	
@@ -112,11 +172,15 @@ void test_ide() {
 	outb(0, PORT_DISK0_SECTOR_MID);
 	outb(0, PORT_DISK0_SECTOR_HIGH);
 
-	while (!inb(PORT_DISK0_STATUS_CMD) & DISK_STATUS_READY);
+	//while (!inb(PORT_DISK0_STATUS_CMD) & DISK_STATUS_READY);
 
-	dprintf("disk ready status: %\n", inb(PORT_DISK0_STATUS_CMD));
+	//dprintf("disk ready status: %\n", inb(PORT_DISK0_STATUS_CMD));
 
-	outb(0x20, PORT_DISK0_STATUS_CMD);
+	//dprintf("do_hd_read: %\n", (int)&do_hd_read);
+	//dprintf("do_hd_write: %\n", (int)&do_hd_write);
+
+	//outb(0x20, PORT_DISK0_STATUS_CMD);
+	//outb(0x30, PORT_DISK0_STATUS_CMD);
 
 }
 

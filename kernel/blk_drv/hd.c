@@ -26,15 +26,37 @@
 #define DISK_STATUS_REQ		(1<<3)
 #define DISK_STATUS_ERROR	(1<<0)
 
+static char buf_read[512] = { 'y', 'd', };
+static char buf_write[512] = { 'y', 'd', };
+
+void do_hd_read(int intr_num) {
+	dprintf_color("do_hd_read occur:%\n", intr_num);
+	insw(PORT_DISK0_DATA, &buf_read, 256);
+}
+
+void do_hd_write(int intr_num) {
+	dprintf_color("do_hd_write occur:%\n", intr_num);
+	outsw(PORT_DISK0_DATA, &buf_write, 256);
+}
+
+int hd_interrupt = &do_hd_read;
+
 //// 向硬盘控制器发送命令块（参见列表后的说明）。
 // 调用参数：drive - 硬盘号(0-1)； nsect - 读写扇区数；
 // sect - 起始扇区； head - 磁头号；
 // cyl - 柱面号； cmd - 命令码；
 // *intr_addr() - 硬盘中断处理程序中将调用的C 处理函数。
 void hd_out(unsigned int count, unsigned int sect, unsigned int head, unsigned int cyl, unsigned int cmd) {
-	register int port; //asm ("dx");	// port 变量对应寄存器dx。
-
+	register int port;
 	while (inb(PORT_DISK0_STATUS_CMD) & DISK_STATUS_BUSY);
+
+	if (cmd == 0x20) {
+		hd_interrupt = &do_hd_read;
+	}
+
+	if (cmd == 0x30) {
+		hd_interrupt = &do_hd_write;
+	}
 
 	outb(0xb0 | head, PORT_DISK0_DEVICE);
 	outb(0, PORT_DISK0_ERR_FEATURE);
@@ -43,7 +65,6 @@ void hd_out(unsigned int count, unsigned int sect, unsigned int head, unsigned i
 	outb(cyl, PORT_DISK0_SECTOR_MID);
 	outb(cyl >> 8, PORT_DISK0_SECTOR_HIGH);
 	outb(cmd, PORT_DISK0_STATUS_CMD);
-
 }
 
 extern void hd_interrupt_entry;
@@ -53,12 +74,4 @@ void hd_init(void) {
 	set_intr_gate(0x2e, &hd_interrupt_entry);	// 设置硬盘中断门向量 int 0x2E(46)。
 	outb_p(inb_p(0x21) & 0xfb, 0x21);	// 复位接联的主8259A int2 的屏蔽位，允许从片发出中断请求信号。
 	outb(inb_p(0xA1) & 0xbf, 0xA1);	// 复位硬盘的中断请求屏蔽位（在从片上），允许硬盘控制器发送中断请求信号。
-}
-
-static char buf[512] = { 'y', 'd', };
-
-void hd_interrupt(int intr_num) {
-	dprintf_color("hd_interrupt occur:%\n", intr_num);
-	insw(PORT_DISK0_DATA, &buf, 256);
-	dprintk(buf);
 }
