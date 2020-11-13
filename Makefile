@@ -23,9 +23,9 @@ all: Image
 Image: os.raw file.raw
 	@echo [映像准备就绪] 内核映像 oa.raw 文件系统映像 file.raw
 
-os.raw: others/bochs/os.raw boot/bootsect.bin boot/setup.bin init/main.bin
+os.raw: others/bochs/os.disk boot/bootsect.bin boot/setup.bin init/main.bin
 	@echo [创建存放内核的虚拟硬盘] 准备空文件 os.raw
-	@copy /Y others\bochs\os.raw os.raw
+	@copy /Y others\bochs\os.disk os.raw
 	@echo [创建存放内核的虚拟硬盘] 第1扇区（启动区）写入 bootsect.bin
 	@dd if=boot/bootsect.bin of=os.raw bs=512 count=1
 	@echo [创建存放内核的虚拟硬盘] 第2扇区写入连续4扇区内容 setup.bin
@@ -36,7 +36,7 @@ os.raw: others/bochs/os.raw boot/bootsect.bin boot/setup.bin init/main.bin
 	
 file.raw: others/bochs/file.raw
 	@echo [创建存放文件系统的虚拟硬盘] 准备空文件 file.raw
-	@copy /Y others\bochs\file.raw file.raw
+	@copy /Y others\bochs\file.disk file.raw
 	@echo [创建存放文件系统的虚拟硬盘] file.raw 生成完毕
 
 ######### 三个主文件，启动区(bootsect)、加载器(setup)、内核(main) #########
