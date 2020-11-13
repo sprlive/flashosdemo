@@ -34,7 +34,7 @@ os.raw: others/bochs/os.disk boot/bootsect.bin boot/setup.bin init/main.bin
 	@dd if=init/main.bin of=os.raw bs=512 count=100 seek=5
 	@echo [创建存放内核的虚拟硬盘] os.raw 生成完毕
 	
-file.raw: others/bochs/file.raw
+file.raw: others/bochs/file.disk
 	@echo [创建存放文件系统的虚拟硬盘] 准备空文件 file.raw
 	@copy /Y others\bochs\file.disk file.raw
 	@echo [创建存放文件系统的虚拟硬盘] file.raw 生成完毕
